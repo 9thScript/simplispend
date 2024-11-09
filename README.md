@@ -1,5 +1,7 @@
 # SimpliSpend
-![image](https://github.com/user-attachments/assets/161e8004-4c0d-403b-8c33-2326ec4885ae)
+
+![SimpliSpend Logo copy](https://github.com/user-attachments/assets/406b5d69-6db1-4f15-8954-3992e57fa070)
+
 Application Development and Emerging Technologies Final Project
 
 by: Kim(berly)
