@@ -1,6 +1,7 @@
 
 # SimpliSpend 
 Application Development and Emerging Technologies Final Project
+
 by: Kim(berly)
 
 # Developers
