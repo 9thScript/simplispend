@@ -1,4 +1,4 @@
-![SimpliSpend Logo copy](https://github.com/user-attachments/assets/406b5d69-6db1-4f15-8954-3992e57fa070)
+![Logo Small2](https://github.com/user-attachments/assets/ef741802-2574-47f9-8871-249541292845)
 
 Application Development and Emerging Technologies Final Project
 
