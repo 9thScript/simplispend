@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "228506771387",
+    "project_id": "simplispend",
+    "storage_bucket": "simplispend.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228506771387:android:244ad3bd45aed50ecb2e9e",
+        "android_client_info": {
+          "package_name": "com.example.simplispend_authorization"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKbe1iPWgUjqzwdA2kknRVN85VFZrqsWs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
