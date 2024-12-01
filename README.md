@@ -1,16 +1,12 @@
-# simplispend_authorization
+![Logo Small2](https://github.com/user-attachments/assets/ef741802-2574-47f9-8871-249541292845)
 
-A new Flutter project.
+Application Development and Emerging Technologies Final Project
 
-## Getting Started
+by: Kim(berly)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Developers
+- Calizo, Christian Kim C.
+- Cortina, Clarence C.
+- Darantinao, Jhon Michael M.
+- Gonzales, Lance Daniel L.
+- Macaganda, Lance Arvin D.
