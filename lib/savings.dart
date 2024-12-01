@@ -57,7 +57,7 @@ class _SavingsScreenState extends State<SavingsScreen> {
                 setState(() {
                   savingsGoal =
                       double.tryParse(goalController.text) ?? savingsGoal;
-                  currentSavings = 0;
+                  if (savingsGoal < 0) savingsGoal = 0;
                 });
                 Navigator.pop(context);
               },
@@ -115,7 +115,8 @@ class _SavingsScreenState extends State<SavingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double progress = savingsGoal > 0 ? currentSavings / savingsGoal : 0;
+    double progress = (savingsGoal > 0) ? currentSavings / savingsGoal : 0;
+    List<double> budgetDistribution = calculateBudgetDistribution(savingsGoal);
 
     return Scaffold(
       backgroundColor: Color(0xFF1e1e2c),
@@ -141,26 +142,22 @@ class _SavingsScreenState extends State<SavingsScreen> {
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             Container(
               height: 40,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color:
-                    Color(0xFF2e2e3a), // Background color of the progress bar
+                color: Color(0xFF2e2e3a),
               ),
               child: LinearProgressIndicator(
                 value: progress,
-                minHeight:
-                    10, // Make the progress bar thicker by setting minHeight
+                minHeight: 10,
                 backgroundColor: Colors.grey.shade800,
                 valueColor: AlwaysStoppedAnimation<Color>(
                     progress >= 1 ? Colors.green : Colors.yellow),
               ),
             ),
-
-            const SizedBox(height: 40),
-            // Row with Buttons Side by Side
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -192,26 +189,105 @@ class _SavingsScreenState extends State<SavingsScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            // Display selected start and end dates
             if (startDate != null && endDate != null)
-              Text(
-                "From: ${formatDate(startDate!)}", // Format the start date
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "From: ${formatDate(startDate!)}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "To: ${formatDate(endDate!)}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        savingsGoal = 0;
+                        currentSavings = 0;
+                        startDate = null;
+                        endDate = null;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: Text(
+                      "Reset",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
-            if (endDate != null) // Check if endDate is not null
-              Text(
-                "To: ${formatDate(endDate!)}", // Format the end date
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
+            const SizedBox(height: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      "Budgeting Type:",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    DropdownButton<String>(
+                      dropdownColor: Color(0xFF23252D),
+                      value: selectedBudgetType,
+                      items: budgetingOptions.keys.map((type) {
+                        return DropdownMenuItem(
+                          value: type,
+                          child: Text(
+                            type,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedBudgetType = value!;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-              ),
-
-            const SizedBox(height: 40),
-            // Grid for Increment Buttons
+                const SizedBox(height: 10),
+                // Horizontal Budget Distribution
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(budgetDistribution.length, (index) {
+                    return Flexible(
+                      child: Column(
+                        children: [
+                          Text(
+                            "${budgetingOptions[selectedBudgetType]![index]}%",
+                            style: TextStyle(color: Colors.white, fontSize: 14),
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            "₱${budgetDistribution[index].toStringAsFixed(2)}",
+                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -239,10 +315,24 @@ class _SavingsScreenState extends State<SavingsScreen> {
     );
   }
 
+  String selectedBudgetType = "50/30/20";
+  Map<String, List<double>> budgetingOptions = {
+    "50/30/20": [50, 30, 20],
+    "50/15/5": [50, 15, 5],
+    "80/20": [80, 20, 0],
+  };
+
+  List<double> calculateBudgetDistribution(double totalAmount) {
+    List<double> percentages = budgetingOptions[selectedBudgetType]!;
+    return percentages.map((percent) => (totalAmount * percent / 100)).toList();
+  }
+
   Widget _buildIncrementButton(double amount) {
     return ElevatedButton(
       onPressed: () {
-        incrementSavings(amount);
+        if (amount.isFinite) {
+          incrementSavings(amount);
+        }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.yellow,
