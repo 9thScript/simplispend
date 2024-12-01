@@ -53,11 +53,29 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       if (index < transactions.length) {
         var transaction = transactions[index];
+        double transactionAmount = double.parse(transaction['amount']);
+
+        // Only update the balance if it's not today's transaction
+        if (transaction['date'].day != DateTime.now().day) {
+          // For past transactions, adjust balance
+          if (transaction['type'] == 'Expense') {
+            totalExpense -= transactionAmount;
+            balance += transactionAmount;
+          } else if (transaction['type'] == 'Income') {
+            totalIncome -= transactionAmount;
+            balance -= transactionAmount;
+          }
+        }
+
+        // Update rank based on the new balance
+        _updateRank();
+
+        // Remove the transaction and pie chart section
         transactions.removeAt(index);
         pieChartSections.removeAt(index);
 
         appState.removeTransaction(
-          double.parse(transaction['amount']),
+          transactionAmount,
           transaction['type'],
         );
       }
@@ -75,6 +93,19 @@ class _HomePageState extends State<HomePage> {
         Color newColor =
             Colors.primaries[pieChartSections.length % Colors.primaries.length];
 
+        // Check if the transaction is for today
+        DateTime transactionDate = DateTime.now();
+        if (transactionDate.day == DateTime.now().day) {
+          // Update balance only if it's today's transaction
+          if (transactionType == 'Expense') {
+            totalExpense += transactionValue;
+            balance -= transactionValue;
+          } else if (transactionType == 'Income') {
+            totalIncome += transactionValue;
+            balance += transactionValue;
+          }
+        }
+
         pieChartSections.add({
           'name': transactionName,
           'section': PieChartSectionData(
@@ -85,23 +116,18 @@ class _HomePageState extends State<HomePage> {
           ),
         });
         transactions.add({
+          'date': DateTime.now(), // Add the current date to the transaction
           'label': transactionName,
           'amount': transactionValue.toStringAsFixed(2),
           'color': newColor,
           'type': transactionType,
         });
 
-        if (transactionType == 'Expense') {
-          totalExpense += transactionValue;
-          balance -= transactionValue;
-        } else if (transactionType == 'Income') {
-          totalIncome += transactionValue;
-          balance += transactionValue;
-        }
-
         final appState = Provider.of<AppState>(context, listen: false);
-        appState.updateBalance(transactionValue,
-            transactionType); // Update rank based on the new balance
+        appState.updateBalance(transactionValue, transactionType);
+
+        // Update rank based on the balance
+        _updateRank();
       });
     }
   }
@@ -161,58 +187,63 @@ class _HomePageState extends State<HomePage> {
           builder: (BuildContext context, StateSetter setDialogState) {
             return AlertDialog(
               title: const Text('New Transaction'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter transaction name',
-                    ),
-                    onChanged: (value) => setDialogState(validateForm),
-                  ),
-                  TextField(
-                    controller: valueController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter transaction value',
-                    ),
-                    onChanged: (value) => setDialogState(validateForm),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              content: SingleChildScrollView(
+                // Wrap entire content with SingleChildScrollView
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                      maxHeight: 350), // Constrain height for better layout
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('Expense',
-                              style: TextStyle(fontSize: 15)),
-                          value: 'Expense',
-                          groupValue: transactionType,
-                          onChanged: (value) {
-                            setDialogState(() {
-                              transactionType = value;
-                              validateForm();
-                            });
-                          },
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter transaction name',
                         ),
+                        onChanged: (value) => setDialogState(validateForm),
                       ),
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('Income',
-                              style: TextStyle(fontSize: 15)),
-                          value: 'Income',
-                          groupValue: transactionType,
-                          onChanged: (value) {
-                            setDialogState(() {
-                              transactionType = value;
-                              validateForm();
-                            });
-                          },
+                      TextField(
+                        controller: valueController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter transaction value',
                         ),
+                        onChanged: (value) => setDialogState(validateForm),
+                      ),
+                      const SizedBox(height: 10), // Add spacing between fields
+                      // Wrap the radio buttons in a Column to avoid clipping
+                      Column(
+                        children: [
+                          RadioListTile<String>(
+                            title: const Text('Expense',
+                                style: TextStyle(fontSize: 15)),
+                            value: 'Expense',
+                            groupValue: transactionType,
+                            onChanged: (value) {
+                              setDialogState(() {
+                                transactionType = value;
+                                validateForm();
+                              });
+                            },
+                          ),
+                          RadioListTile<String>(
+                            title: const Text('Income',
+                                style: TextStyle(fontSize: 15)),
+                            value: 'Income',
+                            groupValue: transactionType,
+                            onChanged: (value) {
+                              setDialogState(() {
+                                transactionType = value;
+                                validateForm();
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
               actions: <Widget>[
                 TextButton(

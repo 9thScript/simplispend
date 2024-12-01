@@ -116,6 +116,18 @@ class _CalendarPageState extends State<CalendarPage> {
     final income = Provider.of<AppState>(context).totalIncome;
     final expense = Provider.of<AppState>(context).totalExpense;
 
+    // Calculate total for selected day, or default to 0 if no day is selected
+    double dayIncome = 0;
+    double dayExpense = 0;
+    double dayRemaining = 0;
+
+    if (selectedDay != null) {
+      // Fetch transactions for the selected day
+      dayIncome = _getIncomeForSelectedDay(selectedDay!);
+      dayExpense = _getExpenseForSelectedDay(selectedDay!);
+      dayRemaining = _getRemainingForSelectedDay(selectedDay!);
+    }
+
     int daysInMonth =
         DateTime(selectedDate.year, selectedDate.month + 1, 0).day;
     int startDayOffset =
@@ -223,7 +235,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           style: TextStyle(color: Colors.grey),
                         ),
                         Text(
-                          "$expense",
+                          "$dayExpense", // Display expense for selected day
                           style: TextStyle(
                               color: Colors.red, fontWeight: FontWeight.bold),
                         ),
@@ -236,7 +248,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           style: TextStyle(color: Colors.grey),
                         ),
                         Text(
-                          "$income",
+                          "$dayIncome", // Display income for selected day
                           style: TextStyle(
                               color: Colors.green, fontWeight: FontWeight.bold),
                         ),
@@ -249,7 +261,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           style: TextStyle(color: Colors.grey),
                         ),
                         Text(
-                          "$remaining",
+                          "$dayRemaining", // Display remaining for selected day
                           style: TextStyle(
                               color: Colors.yellow,
                               fontWeight: FontWeight.bold),
@@ -264,5 +276,35 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
       ),
     );
+  }
+
+  // Mock data retrieval for income, expense, and remaining balance
+  double _getIncomeForSelectedDay(DateTime selectedDay) {
+    final income = Provider.of<AppState>(context).totalIncome;
+    // Example logic - Replace with your actual data fetching logic
+    if (selectedDay.year == 2024 &&
+        selectedDay.month == 12 &&
+        selectedDay.day == 1) {
+      return income; // Example income for Dec 1, 2024
+    }
+    return 0.0; // Return zero if no data for that day
+  }
+
+  double _getExpenseForSelectedDay(DateTime selectedDay) {
+    final expense = Provider.of<AppState>(context).totalExpense;
+    // Example logic - Replace with your actual data fetching logic
+    if (selectedDay.year == 2024 &&
+        selectedDay.month == 12 &&
+        selectedDay.day == 1) {
+      return expense; // Example expense for Dec 1, 2024
+    }
+    return 0.0; // Return zero if no data for that day
+  }
+
+  double _getRemainingForSelectedDay(DateTime selectedDay) {
+    // Example logic - Replace with your actual data fetching logic
+    double income = _getIncomeForSelectedDay(selectedDay);
+    double expense = _getExpenseForSelectedDay(selectedDay);
+    return income - expense; // Calculate remaining balance
   }
 }

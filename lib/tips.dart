@@ -11,11 +11,21 @@ class TipsPage extends StatelessWidget {
           backgroundColor: const Color(0xFF1e1e2c),
           title: Text(
             title,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 22, // Increased font size for title
+              fontWeight: FontWeight.bold, // Optional: to make title bold
+            ),
           ),
-          content: Text(
-            content,
-            style: const TextStyle(color: Colors.white),
+          content: SingleChildScrollView(
+            // Added to make content scrollable
+            child: Text(
+              content,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18, // Increased font size for content
+              ),
+            ),
           ),
           actions: [
             TextButton(
@@ -24,7 +34,10 @@ class TipsPage extends StatelessWidget {
               },
               child: const Text(
                 'Close',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18, // Adjusted font size for close button
+                ),
               ),
             ),
           ],

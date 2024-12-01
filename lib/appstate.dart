@@ -66,4 +66,10 @@ class AppState extends ChangeNotifier {
       currentRank = 'Unranked';
     }
   }
+
+  getExpenseForDate(DateTime dateTime) {}
+
+  getIncomeForDate(DateTime dateTime) {}
+
+  getBalanceForDate(DateTime dateTime) {}
 }
